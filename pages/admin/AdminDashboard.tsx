@@ -1,34 +1,15 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, Settings, Globe, Code, FileDown } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Settings, FileDown, Github } from 'lucide-react';
 import ProductManager from './ProductManager';
 import OrderManager from './OrderManager';
 import SettingsManager from './SettingsManager';
 import { useStore } from '../../store';
+import ProjectDownloader from '../../components/ProjectDownloader';
 
 const AdminDashboard: React.FC = () => {
   const location = useLocation();
   const { storeSettings } = useStore();
-
-  const handleExport = () => {
-    // Simple export of store data to JSON
-    const data = {
-      products: JSON.parse(localStorage.getItem('products') || '[]'),
-      orders: JSON.parse(localStorage.getItem('orders') || '[]'),
-      settings: JSON.parse(localStorage.getItem('storeSettings') || '{}'),
-      pixels: JSON.parse(localStorage.getItem('pixelSettings') || '{}')
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `store-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-64px)] bg-gray-100">
@@ -44,13 +25,10 @@ const AdminDashboard: React.FC = () => {
           <NavLink to="/admin/orders" icon={<ShoppingBag size={20} />} label="الطلبات" active={location.pathname === '/admin/orders'} />
           <NavLink to="/admin/settings" icon={<Settings size={20} />} label="الإعدادات والبيكسل" active={location.pathname === '/admin/settings'} />
           
-          <button 
-            onClick={handleExport}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary rounded-lg transition-colors mt-8 border border-dashed border-gray-300"
-          >
-            <FileDown size={20} />
-            <span className="font-medium">تصدير بيانات الموقع</span>
-          </button>
+          <div className="pt-8 px-2">
+            <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 px-2">تصدير الموقع</h3>
+             <NavLink to="/admin/download" icon={<Github size={20} />} label="تحميل للكود (GitHub)" active={location.pathname === '/admin/download'} />
+          </div>
         </nav>
       </aside>
 
@@ -61,6 +39,7 @@ const AdminDashboard: React.FC = () => {
           <Route path="/products" element={<ProductManager />} />
           <Route path="/orders" element={<OrderManager />} />
           <Route path="/settings" element={<SettingsManager />} />
+          <Route path="/download" element={<ProjectDownloader />} />
         </Routes>
       </main>
     </div>
